@@ -1,0 +1,17 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+    <!-- Define persistence unit -->
+    <persistence-unit name="my-persistence-unit" transaction-type="JTA">
+        <description>MainPersistanceUnit</description>
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <jta-data-source>jdbc/jpaResource</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="toplink.logging.level" value="FINEST"/>
+            <property name="toplink.ddl-generation" value="create-tables"/>
+            <property name="toplink.create-ddl-jdbc-file-name" value="sqlScript.sql"/>
+            <property name="toplink.ddl-generation.output-mode" value="both"/>
+        </properties>
+    </persistence-unit>
+</persistence>
