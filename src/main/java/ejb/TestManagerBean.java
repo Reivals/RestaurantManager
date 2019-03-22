@@ -1,6 +1,5 @@
 package ejb;
 
-import database.DummyData;
 import ejb.interfaces.TestManagerBeanLocal;
 
 import javax.ejb.Stateless;
@@ -22,7 +21,6 @@ public class TestManagerBean implements TestManagerBeanLocal {
     @Override
     public void doNothing() {
         System.out.println("xDDDDDDDDDDDDDDDDDDd");
-        em.persist(new DummyData("xDDD","xddd"));
         return;
     }
 }

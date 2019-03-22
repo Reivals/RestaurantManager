@@ -5,12 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Michal on 22.03.2019
  */
 @Entity
-@Table
+@Table(name = "INGREDIENT")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,6 +38,16 @@ public class Ingredient {
 
     @Column(name = "ING_TYPE")
     private Type type;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "dish_ingredients",
+            joinColumns = @JoinColumn(name = "ING_IG"),
+            inverseJoinColumns = @JoinColumn(name = "DIS_ID")
+    )
+    private List<Dish> dishes;
 
 
     public Ingredient(String name, String calories, Type type) {

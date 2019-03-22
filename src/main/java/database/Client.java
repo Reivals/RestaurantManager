@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @author Michal on 22.03.2019
  */
 @Entity
-@Table
+@Table(name = "CLIENTS")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class Client {
     @Column(name = "CLI_LAST_NAME")
     private String secondName;
 
-    @Column(name = "CLI_TABLE_NUMBER")
+    @Column(name = "CLI_TABLE_NUMBER", nullable = false)
     private Long tableNumber;
 
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL,
