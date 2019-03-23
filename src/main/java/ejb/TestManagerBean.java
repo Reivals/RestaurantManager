@@ -1,5 +1,6 @@
 package ejb;
 
+import database.Ingredient;
 import ejb.interfaces.TestManagerBeanLocal;
 
 import javax.ejb.Stateless;
@@ -21,6 +22,7 @@ public class TestManagerBean implements TestManagerBeanLocal {
     @Override
     public void doNothing() {
         System.out.println("xDDDDDDDDDDDDDDDDDDd");
+        em.persist(new Ingredient("sdasd","23123",Ingredient.Type.FRUIT));
         return;
     }
 }

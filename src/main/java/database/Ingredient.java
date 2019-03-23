@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Ingredient {
 
-    private enum Type{
+    public enum Type{
         VEGETABLE,
         MEAT,
         FRUIT,
