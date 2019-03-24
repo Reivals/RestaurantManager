@@ -23,10 +23,13 @@ public class SingleOrder {
     @Column(name = "SOR_ID")
     private Long id;
 
-    @OneToMany(
-            mappedBy = "singleOrder",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "dish_orders",
+            joinColumns = @JoinColumn(name = "SOR_ID"),
+            inverseJoinColumns = @JoinColumn(name = "DIS_ID")
     )
     private List<Dish> orderedDishes;
 
@@ -37,7 +40,7 @@ public class SingleOrder {
     @JoinColumn(name = "SOR_SINGLE_ORDER", referencedColumnName = "singleOrder")
     private Client client;
 
-    public void addDish(Dish dish){
+/*    public void addDish(Dish dish){
         orderedDishes.add(dish);
         dish.setSingleOrder(this);
     }
@@ -45,7 +48,7 @@ public class SingleOrder {
     public void removeDish(Dish dish){
         orderedDishes.remove(dish);
         dish.setSingleOrder(null);
-    }
+    }*/
 
 
 }

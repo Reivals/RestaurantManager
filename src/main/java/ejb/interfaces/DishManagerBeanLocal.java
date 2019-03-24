@@ -1,7 +1,8 @@
 package ejb.interfaces;
 
-import database.Client;
 import database.Dish;
+import database.Ingredient;
+import exceptions.ApplicationException;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
 @Local
 public interface DishManagerBeanLocal {
 
-    List<Client> getAllDishes(Long clientId);
-    Client getDishById(Long dishId);
-    List<Dish> getDishesByOrder(Long orderId);
+    Dish getDishByName(String dishId) throws ApplicationException;
+    List<Dish> getDishesByOrder(Long orderId) throws ApplicationException;
+    List<Ingredient> getDishIngredients(String dishName) throws ApplicationException;
 
 }

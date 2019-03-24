@@ -23,14 +23,14 @@ public class Dish {
     @Column(name = "DIS_ID")
     private Long id;
 
-    @Column(name = "DIS_NAME")
+    @Column(name = "DIS_NAME", unique = true)
     private String dishName;
 
     @ManyToMany(mappedBy = "dishes")
     @JoinColumn(name = "DIS_INGREDIENTS")
     private List<Ingredient> ingredients;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "orderedDishes")
     @JoinColumn(name = "DIS_SINGLE_ORDER")
-    private SingleOrder singleOrder;
+    private List<SingleOrder> singleOrder;
 }
