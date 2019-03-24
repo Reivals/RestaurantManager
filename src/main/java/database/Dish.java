@@ -27,10 +27,8 @@ public class Dish {
     private String dishName;
 
     @ManyToMany(mappedBy = "dishes")
-    @JoinColumn(name = "DIS_INGREDIENTS")
     private List<Ingredient> ingredients;
 
     @ManyToMany(mappedBy = "orderedDishes")
-    @JoinColumn(name = "DIS_SINGLE_ORDER")
     private List<SingleOrder> singleOrder;
 }

@@ -1,17 +1,13 @@
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1"
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <!-- Define persistence unit -->
-    <persistence-unit name="my-persistence-unit" transaction-type="JTA">
-        <description>MainPersistanceUnit</description>
-        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
-        <jta-data-source>jdbc/jpaResource</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+    <persistence-unit name="BidirectionalPU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>java:/MySqlDS</jta-data-source>
         <properties>
-            <property name="toplink.logging.level" value="FINEST"/>
-            <property name="toplink.ddl-generation" value="create-tables"/>
-            <property name="toplink.create-ddl-jdbc-file-name" value="sqlScript.sql"/>
-            <property name="toplink.ddl-generation.output-mode" value="both"/>
+            <property name="hibernate.archive.autodetection" value="class" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

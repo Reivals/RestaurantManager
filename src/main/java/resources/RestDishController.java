@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.Dish;
 import database.Ingredient;
+import dto.DishRequest;
 import ejb.interfaces.DishManagerBeanLocal;
 import exceptions.ApplicationException;
+import exceptions.ErrorMessage;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
@@ -28,12 +28,16 @@ public class RestDishController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getDish/{name}")
-    public Response getDishById(@PathParam("name") String name){
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/getDish")
+    public Response getDishById(DishRequest dishRequest){
+        if(dishRequest == null || StringUtils.isBlank(dishRequest.getName())){
+            return Response.status(400).entity(new ErrorMessage("Invalid parameters passed")).build();
+        }
         try {
-           Dish dish = testManagerBean.getDishByName(name);
+           Dish dish = testManagerBean.getDishByName(dishRequest.getName());
            return Response.ok(objectMapper.writeValueAsString(dish)).build();
         } catch (ApplicationException e) {
             return Response.status(204).build();

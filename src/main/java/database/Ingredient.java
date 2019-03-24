@@ -34,7 +34,7 @@ public class Ingredient {
     private String name;
 
     @Column(name = "ING_CALORIES")
-    private String calories;
+    private Double calories;
 
     @Column(name = "ING_TYPE")
     private Type type;
@@ -50,7 +50,7 @@ public class Ingredient {
     private List<Dish> dishes;
 
 
-    public Ingredient(String name, String calories, Type type) {
+    public Ingredient(String name, Double calories, Type type) {
         this.name = name;
         this.calories = calories;
         this.type = type;

@@ -36,19 +36,12 @@ public class SingleOrder {
     @Column(name = "SOR_TABLE_NUMBER")
     private Long tableNumber;
 
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SOR_SINGLE_ORDER", referencedColumnName = "singleOrder")
+    @JoinColumn(name = "SOR_SINGLE_ORDER")
     private Client client;
 
-/*    public void addDish(Dish dish){
-        orderedDishes.add(dish);
-        dish.setSingleOrder(this);
-    }
 
-    public void removeDish(Dish dish){
-        orderedDishes.remove(dish);
-        dish.setSingleOrder(null);
-    }*/
 
 
 }

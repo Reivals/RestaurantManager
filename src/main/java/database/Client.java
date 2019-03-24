@@ -30,7 +30,7 @@ public class Client {
     @Column(name = "CLI_TABLE_NUMBER", nullable = false)
     private Long tableNumber;
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL,
+   @OneToOne(mappedBy = "client", cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, optional = false)
     private SingleOrder singleOrder;
 
