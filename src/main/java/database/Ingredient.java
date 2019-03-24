@@ -1,5 +1,6 @@
 package database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,6 +40,7 @@ public class Ingredient {
     @Column(name = "ING_TYPE")
     private Type type;
 
+    @JsonIgnore
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE

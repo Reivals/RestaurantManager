@@ -16,5 +16,5 @@ public interface DishManagerBeanLocal {
     Dish getDishByName(String dishId) throws ApplicationException;
     List<Dish> getDishesByOrder(Long orderId) throws ApplicationException;
     List<Ingredient> getDishIngredients(String dishName) throws ApplicationException;
-
+    List<Dish> getAllDishes();
 }

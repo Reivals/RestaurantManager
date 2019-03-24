@@ -3,8 +3,7 @@ package resources;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.Dish;
-import database.Ingredient;
-import dto.DishRequest;
+import dto.WSDish;
 import ejb.interfaces.DishManagerBeanLocal;
 import exceptions.ApplicationException;
 import exceptions.ErrorMessage;
@@ -14,7 +13,7 @@ import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +21,8 @@ import java.util.List;
  */
 
 @Path("/api")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class RestDishController {
     @EJB
     private DishManagerBeanLocal testManagerBean;
@@ -29,16 +30,14 @@ public class RestDishController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/getDish")
-    public Response getDishById(DishRequest dishRequest){
-        if(dishRequest == null || StringUtils.isBlank(dishRequest.getName())){
+    @Path("/getDishByName")
+    public Response getDishByName(WSDish WSDish){
+        if(WSDish == null || StringUtils.isBlank(WSDish.getName())){
             return Response.status(400).entity(new ErrorMessage("Invalid parameters passed")).build();
         }
         try {
-           Dish dish = testManagerBean.getDishByName(dishRequest.getName());
-           return Response.ok(objectMapper.writeValueAsString(dish)).build();
+           Dish dish = testManagerBean.getDishByName(WSDish.getName());
+           return Response.ok(objectMapper.writeValueAsString(new WSDish().fillProperties(dish))).build();
         } catch (ApplicationException e) {
             return Response.status(204).build();
         } catch (JsonProcessingException e) {
@@ -48,8 +47,7 @@ public class RestDishController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getDishByOrder/{id}")
+    @Path("/getDishesByOrder/{id}")
     public Response getDishByOrder(Long orderId){
         try {
             List<Dish> dish = testManagerBean.getDishesByOrder(orderId);
@@ -63,14 +61,13 @@ public class RestDishController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getDishByIngredients/{dishName}")
-    public Response getDishByIngredients(@PathParam("dishName") String dishName) throws JsonProcessingException {
+    @Path("/getAllDishes")
+    public Response getAllDishes(Long orderId){
         try {
-            List<Ingredient> dish = testManagerBean.getDishIngredients(dishName);
-            return Response.ok(objectMapper.writeValueAsString(dish)).build();
-        } catch (ApplicationException e) {
-            return Response.ok(objectMapper.writeValueAsString(Collections.emptyList())).build();
+            List<Dish> dish = testManagerBean.getAllDishes();
+            List<WSDish> respone = new ArrayList<>();
+            dish.stream().forEach( d -> respone.add(new WSDish().fillProperties(d)));
+            return Response.ok(objectMapper.writeValueAsString(respone)).build();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(500).build();

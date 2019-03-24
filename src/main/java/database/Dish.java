@@ -26,7 +26,7 @@ public class Dish {
     @Column(name = "DIS_NAME", unique = true)
     private String dishName;
 
-    @ManyToMany(mappedBy = "dishes")
+    @ManyToMany(mappedBy = "dishes",fetch = FetchType.EAGER)
     private List<Ingredient> ingredients;
 
     @ManyToMany(mappedBy = "orderedDishes")

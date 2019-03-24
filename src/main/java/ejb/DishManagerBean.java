@@ -28,17 +28,18 @@ public class DishManagerBean implements DishManagerBeanLocal {
     @Override
     public Dish getDishByName(String dishName) throws ApplicationException {
         Dish dish;
-        if(dishName == null){
+        if (dishName == null) {
             throw new ApplicationException("Invalid dishId");
         }
-        try{
-            dish =  entityManager.createQuery(
-                    "SELECT d FROM Dish d WHERE d.name = :dishName", Dish.class)
+        try {
+            dish = entityManager.createQuery(
+                    "SELECT d FROM Dish d WHERE d.dishName = :dishName", Dish.class)
                     .setParameter("dishName", dishName)
                     .getSingleResult();
-        } catch(NoResultException exc){
+        } catch (NoResultException exc) {
             throw new ApplicationException("Dish not found");
         }
+        dish.getIngredients().size();
         return dish;
 
     }
@@ -46,15 +47,15 @@ public class DishManagerBean implements DishManagerBeanLocal {
     @Override
     public List<Dish> getDishesByOrder(Long orderId) throws ApplicationException {
         List<Dish> listOfDishes;
-        if(orderId == null){
+        if (orderId == null) {
             throw new ApplicationException("Invalid orderId");
         }
-        try{
-            listOfDishes =  entityManager.createQuery(
+        try {
+            listOfDishes = entityManager.createQuery(
                     "SELECT d FROM Dish d WHERE d.singleOrder = :orderId", Dish.class)
                     .setParameter("orderId", orderId)
                     .getResultList();
-        } catch(NoResultException exc){
+        } catch (NoResultException exc) {
             return Collections.emptyList();
         }
         return listOfDishes;
@@ -62,17 +63,29 @@ public class DishManagerBean implements DishManagerBeanLocal {
 
     public List<Ingredient> getDishIngredients(String dishName) throws ApplicationException {
         Dish dish;
-        if(StringUtils.isBlank(dishName)){
+        if (StringUtils.isBlank(dishName)) {
             throw new ApplicationException("Invalid dishId");
         }
-        try{
-            dish =  entityManager.createQuery(
+        try {
+            dish = entityManager.createQuery(
                     "SELECT d FROM Dish d WHERE d.name = :dishName", Dish.class)
                     .setParameter("dishName", dishName)
                     .getSingleResult();
-        } catch(NoResultException exc){
+        } catch (NoResultException exc) {
             throw new ApplicationException("No dish found");
         }
+        dish.getIngredients().size();
         return dish.getIngredients();
     }
+
+    public List<Dish> getAllDishes() {
+        try {
+            return entityManager.createQuery(
+                    "SELECT d FROM Dish d", Dish.class)
+                    .getResultList();
+        } catch (NoResultException exc) {
+            return Collections.emptyList();
+        }
+    }
+
 }
