@@ -20,13 +20,9 @@ public class WSIngredient {
     @JsonProperty("calories")
     private Double calories;
 
-    @JsonProperty("type")
-    private Ingredient.Type type;
-
     public WSIngredient fillPropeties(Ingredient i) {
         this.ingredientName=i.getName();
         this.calories=i.getCalories();
-        this.type=i.getType();
         return this;
     }
 }

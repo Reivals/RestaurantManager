@@ -19,13 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Ingredient {
 
-    public enum Type{
-        VEGETABLE,
-        MEAT,
-        FRUIT,
-        //TODO
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ING_IG")
@@ -36,9 +29,6 @@ public class Ingredient {
 
     @Column(name = "ING_CALORIES")
     private Double calories;
-
-    @Column(name = "ING_TYPE")
-    private Type type;
 
     @JsonIgnore
     @ManyToMany(cascade = {
@@ -52,9 +42,8 @@ public class Ingredient {
     private List<Dish> dishes;
 
 
-    public Ingredient(String name, Double calories, Type type) {
+    public Ingredient(String name, Double calories) {
         this.name = name;
         this.calories = calories;
-        this.type = type;
     }
 }

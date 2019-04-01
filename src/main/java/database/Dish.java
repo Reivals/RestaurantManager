@@ -18,6 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 public class Dish {
 
+    public enum Type {
+        MAIN_COURSE,
+        SOUP,
+        DESSERT,
+        SALAD,
+        HOT_DRINK,
+        COLD_DRINK
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DIS_ID")
@@ -25,6 +34,9 @@ public class Dish {
 
     @Column(name = "DIS_NAME", unique = true)
     private String dishName;
+
+    @Column(name = "DIS_TYPE")
+    private Type type;
 
     @ManyToMany(mappedBy = "dishes",fetch = FetchType.EAGER)
     private List<Ingredient> ingredients;

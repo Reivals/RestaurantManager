@@ -25,12 +25,15 @@ public class WSDish {
     @JsonProperty("ingredients")
     private List<WSIngredient> ingredients = new ArrayList<>();
 
+    @JsonProperty("type")
+    private Dish.Type type;
 
-    public WSDish fillProperties(Dish dish){
+    public WSDish fillProperties(Dish dish) {
         this.name = dish.getDishName();
         dish.getIngredients().stream().forEach(i -> {
             ingredients.add(new WSIngredient().fillPropeties(i));
         });
+        this.type = dish.getType();
         return this;
     }
 }
