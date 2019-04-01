@@ -62,7 +62,7 @@ public class RestDishController {
 
     @GET
     @Path("/getAllDishes")
-    public Response getAllDishes(Long orderId){
+    public Response getAllDishes(){
         try {
             List<Dish> dish = testManagerBean.getAllDishes();
             List<WSDish> respone = new ArrayList<>();

@@ -31,4 +31,13 @@ public class Dish {
 
     @ManyToMany(mappedBy = "orderedDishes")
     private List<SingleOrder> singleOrder;
+
+    @Column(name = "DIS_COST")
+    private Long costInPennies;
+
+    @Transient
+    public Double getCostInZlotys(){
+        return (costInPennies / 100.0);
+    }
+
 }
