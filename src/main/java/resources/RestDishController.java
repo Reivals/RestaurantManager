@@ -3,6 +3,7 @@ package resources;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.Dish;
+import database.SingleOrder;
 import dto.WSDish;
 import dto.WSSingleOrder;
 import ejb.interfaces.DishManagerBeanLocal;
@@ -84,6 +85,24 @@ public class RestDishController {
     public Response createNewOrder(WSSingleOrder singleOrder){
         orderManagerBeanLocal.createOrder(singleOrder);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/getClientOrder/{clientName}/{clientSurname}/{tableNumber}")
+    public Response getClientOrder(@PathParam("clientName") String clientName,
+                                   @PathParam("clientName") String clientSurname,
+                                   @PathParam("clientName") Long tableNumber){
+
+        SingleOrder singleOrder = orderManagerBeanLocal.getClientSingleOrder(clientName, clientSurname, tableNumber);
+        if(singleOrder != null){
+            try {
+                return Response.ok(objectMapper.writeValueAsString(new WSSingleOrder().fillProperties(singleOrder))).build();
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return Response.serverError().build();
+            }
+        }
+        return Response.noContent().build();
     }
 
 }

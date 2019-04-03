@@ -60,4 +60,20 @@ public class OrderManagerBean implements OrderManagerBeanLocal {
     public void removeOrder() {
 
     }
+
+    public SingleOrder getClientSingleOrder(String firstName, String secondName, Long tableNumber){
+        try {
+            return entityManager.createQuery(
+                    "SELECT d FROM SingleOrder d WHERE d.tableNumber = :tableNumber AND " +
+                            "d.client.firstName = :firstName AND d.client.secondName = :secondName", SingleOrder.class)
+                    .setParameter("tableNumber", tableNumber)
+                    .setParameter("firstName", firstName)
+                    .setParameter("secondName", secondName)
+                    .getSingleResult();
+        } catch (NoResultException exc) {
+            exc.printStackTrace();
+            return null;
+        }
+        return null;
+    }
 }
