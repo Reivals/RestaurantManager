@@ -38,7 +38,7 @@ public class SingleOrder {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SOR_SINGLE_ORDER")
+    @JoinColumn(name = "SOR_CLIENT_ID")
     private Client client;
 
 

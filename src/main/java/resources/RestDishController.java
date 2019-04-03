@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.Dish;
 import dto.WSDish;
+import dto.WSSingleOrder;
 import ejb.interfaces.DishManagerBeanLocal;
+import ejb.interfaces.OrderManagerBeanLocal;
 import exceptions.ApplicationException;
 import exceptions.ErrorMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +27,10 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class RestDishController {
     @EJB
-    private DishManagerBeanLocal testManagerBean;
+    private DishManagerBeanLocal dishManagerBean;
+
+    @EJB
+    private OrderManagerBeanLocal orderManagerBeanLocal;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,7 +41,7 @@ public class RestDishController {
             return Response.status(400).entity(new ErrorMessage("Invalid parameters passed")).build();
         }
         try {
-           Dish dish = testManagerBean.getDishByName(WSDish.getName());
+           Dish dish = dishManagerBean.getDishByName(WSDish.getName());
            return Response.ok(objectMapper.writeValueAsString(new WSDish().fillProperties(dish))).build();
         } catch (ApplicationException e) {
             return Response.status(204).build();
@@ -50,7 +55,7 @@ public class RestDishController {
     @Path("/getDishesByOrder/{id}")
     public Response getDishByOrder(Long orderId){
         try {
-            List<Dish> dish = testManagerBean.getDishesByOrder(orderId);
+            List<Dish> dish = dishManagerBean.getDishesByOrder(orderId);
             return Response.ok(objectMapper.writeValueAsString(dish)).build();
         } catch (ApplicationException e) {
             return Response.status(204).build();
@@ -64,7 +69,7 @@ public class RestDishController {
     @Path("/getAllDishes")
     public Response getAllDishes(){
         try {
-            List<Dish> dish = testManagerBean.getAllDishes();
+            List<Dish> dish = dishManagerBean.getAllDishes();
             List<WSDish> respone = new ArrayList<>();
             dish.stream().forEach( d -> respone.add(new WSDish().fillProperties(d)));
             return Response.ok(objectMapper.writeValueAsString(respone)).build();
@@ -72,6 +77,13 @@ public class RestDishController {
             e.printStackTrace();
             return Response.status(500).build();
         }
+    }
+
+    @POST
+    @Path("/createNewOrder")
+    public Response createNewOrder(WSSingleOrder singleOrder){
+        orderManagerBeanLocal.createOrder(singleOrder);
+        return Response.ok().build();
     }
 
 }
