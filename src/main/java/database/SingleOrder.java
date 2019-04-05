@@ -37,7 +37,7 @@ public class SingleOrder {
     private Long tableNumber;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SOR_CLIENT_ID")
     private Client client;
 

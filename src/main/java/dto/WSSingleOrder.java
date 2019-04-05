@@ -41,7 +41,7 @@ public class WSSingleOrder {
             d.getIngredients().stream().forEach(i -> {
                 dish.getIngredients().add(new WSIngredient().fillPropeties(i));
             });
-            dishList.add(new WSDish());
+            dishList.add(dish);
         });
         return this;
     }

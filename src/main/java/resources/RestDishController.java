@@ -90,8 +90,8 @@ public class RestDishController {
     @GET
     @Path("/getClientOrder/{clientName}/{clientSurname}/{tableNumber}")
     public Response getClientOrder(@PathParam("clientName") String clientName,
-                                   @PathParam("clientName") String clientSurname,
-                                   @PathParam("clientName") Long tableNumber){
+                                   @PathParam("clientSurname") String clientSurname,
+                                   @PathParam("tableNumber") Long tableNumber){
 
         SingleOrder singleOrder = orderManagerBeanLocal.getClientSingleOrder(clientName, clientSurname, tableNumber);
         if(singleOrder != null){
