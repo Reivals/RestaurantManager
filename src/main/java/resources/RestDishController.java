@@ -105,4 +105,19 @@ public class RestDishController {
         return Response.noContent().build();
     }
 
+    @DELETE
+    @Path("/removeDishFromOrder/{singleOrderId}/{dishId}")
+    public Response removeDishFromOrder(@PathParam("singleOrderId") Long singleOrderId,
+                                        @PathParam("dishId") Long dishId){
+        orderManagerBeanLocal.removeDishFromOrder(singleOrderId, dishId);
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/modifySingleOrder")
+    public Response modifySingleOrder(WSSingleOrder singleOrder){
+        System.out.println("xDDDDDDdfsdfdsfs");
+        return Response.ok().build();
+    }
+
 }

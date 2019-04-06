@@ -28,8 +28,15 @@ public class WSDish {
     @JsonProperty("type")
     private Dish.Type type;
 
+    @JsonProperty("cost")
+    private Double cost;
+
+    @JsonProperty("id")
+    private Long id;
+
     public WSDish fillProperties(Dish dish) {
         this.name = dish.getDishName();
+        this.cost = dish.getCostInZlotys();
         dish.getIngredients().stream().forEach(i -> {
             ingredients.add(new WSIngredient().fillPropeties(i));
         });

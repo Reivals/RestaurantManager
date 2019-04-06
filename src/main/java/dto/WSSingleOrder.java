@@ -27,10 +27,14 @@ public class WSSingleOrder {
     @JsonProperty("dishList")
     private List<WSDish> dishList;
 
+    @JsonProperty("id")
+    private Long id;
+
     public WSSingleOrder fillProperties(SingleOrder singleOrder){
         this.clientFirstName = singleOrder.getClient().getFirstName();
         this.clientLastName = singleOrder.getClient().getSecondName();
         this.tableNumber = singleOrder.getTableNumber();
+        this.id = singleOrder.getId();
         if(dishList == null){
             dishList = new ArrayList<>();
         }
@@ -41,6 +45,8 @@ public class WSSingleOrder {
             d.getIngredients().stream().forEach(i -> {
                 dish.getIngredients().add(new WSIngredient().fillPropeties(i));
             });
+            dish.setCost(d.getCostInZlotys());
+            dish.setId(d.getId());
             dishList.add(dish);
         });
         return this;

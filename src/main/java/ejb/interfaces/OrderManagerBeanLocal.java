@@ -12,5 +12,5 @@ public interface OrderManagerBeanLocal {
     void createOrder(WSSingleOrder singleOrder);
     void removeOrder();
     SingleOrder getClientSingleOrder(String firstName, String secondName, Long tableNumber);
-
+    void removeDishFromOrder(Long singleOrderId, Long dishId);
 }

@@ -79,4 +79,19 @@ public class OrderManagerBean implements OrderManagerBeanLocal {
             return null;
         }
     }
+
+    public void removeDishFromOrder(Long singleOrderId, Long dishId){
+        SingleOrder singleOrder = entityManager.createQuery("SELECT s FROM SingleOrder s WHERE s.id = :singleOrderId", SingleOrder.class)
+                .setParameter("singleOrderId", singleOrderId)
+                .getSingleResult();
+        for(Dish dish : singleOrder.getOrderedDishes()){
+            if(dish.getId().equals(dishId)){
+                singleOrder.getOrderedDishes().remove(dish);
+                break;
+            }
+        }
+        entityManager.merge(singleOrder);
+    }
+
+
 }
