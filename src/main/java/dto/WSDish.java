@@ -6,6 +6,7 @@ import database.Dish;
 import database.Ingredient;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +43,18 @@ public class WSDish {
         });
         this.type = dish.getType();
         return this;
+    }
+
+    public boolean validateWSDish(){
+        if(StringUtils.isBlank(name)){
+            return false;
+        } else if(ingredients == null || ingredients.isEmpty()){
+            return false;
+        } else if(type == null){
+            return false;
+        } else if(cost == null){
+            return false;
+        }
+        return true;
     }
 }

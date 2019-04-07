@@ -3,14 +3,19 @@ package ejb;
 import database.Client;
 import database.Dish;
 import database.SingleOrder;
+import dto.WSDish;
 import dto.WSSingleOrder;
+import ejb.interfaces.DishManagerBeanLocal;
 import ejb.interfaces.OrderManagerBeanLocal;
 import exceptions.ApplicationException;
+import javafx.application.Application;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,9 @@ public class OrderManagerBean implements OrderManagerBeanLocal {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @EJB
+    private DishManagerBeanLocal dishManagerBeanLocal;
 
     @Override
     public void createOrder(WSSingleOrder singleOrder) {
@@ -56,11 +64,8 @@ public class OrderManagerBean implements OrderManagerBeanLocal {
 
     }
 
+
     @Override
-    public void removeOrder() {
-
-    }
-
     public SingleOrder getClientSingleOrder(String firstName, String secondName, Long tableNumber){
         try {
              SingleOrder order = entityManager.createQuery(
@@ -80,15 +85,44 @@ public class OrderManagerBean implements OrderManagerBeanLocal {
         }
     }
 
-    public void removeDishFromOrder(Long singleOrderId, Long dishId){
-        SingleOrder singleOrder = entityManager.createQuery("SELECT s FROM SingleOrder s WHERE s.id = :singleOrderId", SingleOrder.class)
-                .setParameter("singleOrderId", singleOrderId)
-                .getSingleResult();
+    @Override
+    public void removeDishFromOrder(Long singleOrderId, Long dishId) throws ApplicationException {
+        SingleOrder singleOrder;
+        try{
+            singleOrder = entityManager.createQuery("SELECT s FROM SingleOrder s WHERE s.id = :singleOrderId", SingleOrder.class)
+                    .setParameter("singleOrderId", singleOrderId)
+                    .getSingleResult();
+        }catch(NonUniqueResultException exc) {
+            exc.printStackTrace();
+            throw new ApplicationException("There is no such order with id: " + singleOrderId);
+        }
+
         for(Dish dish : singleOrder.getOrderedDishes()){
             if(dish.getId().equals(dishId)){
                 singleOrder.getOrderedDishes().remove(dish);
                 break;
             }
+        }
+        entityManager.merge(singleOrder);
+    }
+
+    @Override
+    public void modifyClientSingleOrder(WSSingleOrder wsSingleOrder) throws ApplicationException {
+        SingleOrder singleOrder;
+        try{
+            singleOrder = entityManager.createQuery("SELECT s FROM SingleOrder s WHERE s.id = :singleOrderId", SingleOrder.class)
+                    .setParameter("singleOrderId", wsSingleOrder.getId())
+                    .getSingleResult();
+        } catch(NoResultException exc){
+            exc.printStackTrace();
+            throw new ApplicationException("There is no such order with id: " + wsSingleOrder.getId());
+        } catch(NonUniqueResultException exc ){
+            throw new ApplicationException("Multiple results found for the same id " + wsSingleOrder.getId() + ". Internal Error");
+        }
+        singleOrder.getOrderedDishes().clear();
+        for(WSDish wsDish : wsSingleOrder.getDishList()){
+            Dish dish = dishManagerBeanLocal.getDishByName(wsDish.getName());
+            singleOrder.getOrderedDishes().add(dish);
         }
         entityManager.merge(singleOrder);
     }

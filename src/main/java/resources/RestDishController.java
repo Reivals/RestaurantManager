@@ -102,21 +102,31 @@ public class RestDishController {
                 return Response.serverError().build();
             }
         }
-        return Response.noContent().build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @DELETE
     @Path("/removeDishFromOrder/{singleOrderId}/{dishId}")
     public Response removeDishFromOrder(@PathParam("singleOrderId") Long singleOrderId,
                                         @PathParam("dishId") Long dishId){
-        orderManagerBeanLocal.removeDishFromOrder(singleOrderId, dishId);
+        try {
+            orderManagerBeanLocal.removeDishFromOrder(singleOrderId, dishId);
+        } catch (ApplicationException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
         return Response.ok().build();
     }
 
     @PUT
     @Path("/modifySingleOrder")
     public Response modifySingleOrder(WSSingleOrder singleOrder){
-        System.out.println("xDDDDDDdfsdfdsfs");
+        try {
+            orderManagerBeanLocal.modifyClientSingleOrder(singleOrder);
+        } catch (ApplicationException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
         return Response.ok().build();
     }
 

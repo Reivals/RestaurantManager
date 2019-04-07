@@ -52,4 +52,11 @@ public class Dish {
         return (costInPennies / 100.0);
     }
 
+    public Dish(String dishName, Type type, List<Ingredient> ingredients, List<SingleOrder> singleOrder, Long costInPennies) {
+        this.dishName = dishName;
+        this.type = type;
+        this.ingredients = ingredients;
+        this.singleOrder = singleOrder;
+        this.costInPennies = costInPennies;
+    }
 }

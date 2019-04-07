@@ -2,6 +2,7 @@ package ejb.interfaces;
 
 import database.SingleOrder;
 import dto.WSSingleOrder;
+import exceptions.ApplicationException;
 
 import javax.ejb.Local;
 
@@ -10,7 +11,7 @@ import javax.ejb.Local;
 public interface OrderManagerBeanLocal {
 
     void createOrder(WSSingleOrder singleOrder);
-    void removeOrder();
     SingleOrder getClientSingleOrder(String firstName, String secondName, Long tableNumber);
-    void removeDishFromOrder(Long singleOrderId, Long dishId);
+    void removeDishFromOrder(Long singleOrderId, Long dishId) throws ApplicationException;
+    void modifyClientSingleOrder(WSSingleOrder singleOrder) throws ApplicationException;
 }

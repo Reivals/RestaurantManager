@@ -51,4 +51,5 @@ public class WSSingleOrder {
         });
         return this;
     }
+
 }

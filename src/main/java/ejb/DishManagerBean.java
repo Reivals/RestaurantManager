@@ -2,15 +2,19 @@ package ejb;
 
 import database.Dish;
 import database.Ingredient;
+import dto.WSDish;
+import dto.WSIngredient;
 import ejb.interfaces.DishManagerBeanLocal;
 import exceptions.ApplicationException;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,6 +65,7 @@ public class DishManagerBean implements DishManagerBeanLocal {
         return listOfDishes;
     }
 
+    @Override
     public List<Ingredient> getDishIngredients(String dishName) throws ApplicationException {
         Dish dish;
         if (StringUtils.isBlank(dishName)) {
@@ -78,6 +83,7 @@ public class DishManagerBean implements DishManagerBeanLocal {
         return dish.getIngredients();
     }
 
+    @Override
     public List<Dish> getAllDishes() {
         try {
             return entityManager.createQuery(
@@ -87,5 +93,41 @@ public class DishManagerBean implements DishManagerBeanLocal {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public Dish createDish(WSDish wsDish) throws ApplicationException{
+        if(!wsDish.validateWSDish()){
+            throw new ApplicationException("Incorrect data passed!");
+        }
+        if(getDishByName(wsDish.getName())!=null){
+            throw new ApplicationException("There is already such meal!");
+        }
+        Dish dish = new Dish();
+        dish.setType(wsDish.getType());
+        dish.setDishName(wsDish.getName());
+        dish.setCostInPennies((wsDish.getCost()).longValue());
+        List<Ingredient> ingredients = new ArrayList<>();
+        for(WSIngredient wsIngredient : wsDish.getIngredients()){
+            ingredients.add(new Ingredient(wsIngredient.getIngredientName(),wsIngredient.getCalories()));
+        }
+        dish.setIngredients(ingredients);
+
+        entityManager.persist(dish);
+        return dish;
+    }
+
+    @Override
+    public Dish removeDish(Long dishId) throws ApplicationException {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public Dish modifyDish(WSDish wsDish) throws ApplicationException {
+        //TODO
+        return null;
+    }
+
+
 
 }
