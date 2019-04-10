@@ -1,5 +1,6 @@
 package database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,7 +39,15 @@ public class Dish {
     @Column(name = "DIS_TYPE")
     private Type type;
 
-    @ManyToMany(mappedBy = "dishes",fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE },
+            fetch = FetchType.LAZY)
+    @JoinTable(name = "dish_ingredients",
+            joinColumns = @JoinColumn(name = "DIS_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ING_IG")
+    )
     private List<Ingredient> ingredients;
 
     @ManyToMany(mappedBy = "orderedDishes")
@@ -49,7 +58,10 @@ public class Dish {
 
     @Transient
     public Double getCostInZlotys(){
-        return (costInPennies / 100.0);
+        if(costInPennies != null){
+            return (costInPennies / 100.0);
+        }
+        return 0.0;
     }
 
     public Dish(String dishName, Type type, List<Ingredient> ingredients, List<SingleOrder> singleOrder, Long costInPennies) {
@@ -58,5 +70,15 @@ public class Dish {
         this.ingredients = ingredients;
         this.singleOrder = singleOrder;
         this.costInPennies = costInPennies;
+    }
+
+    public void addIngredient(Ingredient ingredient){
+        this.ingredients.add(ingredient);
+        ingredient.getDishes().add(this);
+    }
+
+    public void removeIngredient(Ingredient ingredient){
+        this.ingredients.remove(ingredients);
+        ingredient.getDishes().remove(this);
     }
 }

@@ -30,12 +30,13 @@ public class Client {
     @Column(name = "CLI_TABLE_NUMBER", nullable = false)
     private Long tableNumber;
 
-   @OneToOne(mappedBy = "client", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, optional = false)
+   @OneToOne(mappedBy = "client",
+           fetch = FetchType.EAGER)
     private SingleOrder singleOrder;
 
-
-
-
-
+    public Client(String firstName, String secondName, Long tableNumber) {
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.tableNumber = tableNumber;
+    }
 }

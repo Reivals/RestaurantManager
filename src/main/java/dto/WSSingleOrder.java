@@ -1,9 +1,12 @@
 package dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import database.Dish;
 import database.SingleOrder;
+import exceptions.ApplicationException;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,4 +55,25 @@ public class WSSingleOrder {
         return this;
     }
 
+    public WSSingleOrder(String clientFirstName, String clientLastName, Long tableNumber, List<WSDish> dishList) {
+        this.clientFirstName = clientFirstName;
+        this.clientLastName = clientLastName;
+        this.tableNumber = tableNumber;
+        this.dishList = dishList;
+    }
+
+    public WSSingleOrder() {
+    }
+
+    public void validateOrder() throws ApplicationException {
+        if(StringUtils.isBlank(clientFirstName)){
+            throw new ApplicationException("Client first name cannot be blank!");
+        } else if(StringUtils.isBlank(clientLastName)){
+            throw new ApplicationException("Client last name cannot be blank!");
+        } else if(tableNumber == null || tableNumber <= 0 ){
+            throw new ApplicationException("Invalid table number passed!");
+        } else if(dishList == null || dishList.isEmpty()){
+            throw new ApplicationException("There has to be at least one dish in the order!");
+        }
+    }
 }

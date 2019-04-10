@@ -7,10 +7,12 @@ import dto.WSIngredient;
 import ejb.interfaces.DishManagerBeanLocal;
 import exceptions.ApplicationException;
 import org.apache.commons.lang3.StringUtils;
+import service.DishService;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -26,72 +28,36 @@ import java.util.List;
 @TransactionAttribute
 public class DishManagerBean implements DishManagerBeanLocal {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Inject
+    private DishService dishService;
 
     @Override
     public Dish getDishByName(String dishName) throws ApplicationException {
-        Dish dish;
-        if (dishName == null) {
+        if (StringUtils.isBlank(dishName)) {
             throw new ApplicationException("Invalid dishId");
         }
-        try {
-            dish = entityManager.createQuery(
-                    "SELECT d FROM Dish d WHERE d.dishName = :dishName", Dish.class)
-                    .setParameter("dishName", dishName)
-                    .getSingleResult();
-        } catch (NoResultException exc) {
-            throw new ApplicationException("Dish not found");
-        }
-        dish.getIngredients().size();
-        return dish;
-
+        return dishService.getDishByName(dishName);
     }
 
     @Override
     public List<Dish> getDishesByOrder(Long orderId) throws ApplicationException {
-        List<Dish> listOfDishes;
         if (orderId == null) {
             throw new ApplicationException("Invalid orderId");
         }
-        try {
-            listOfDishes = entityManager.createQuery(
-                    "SELECT d FROM Dish d WHERE d.singleOrder = :orderId", Dish.class)
-                    .setParameter("orderId", orderId)
-                    .getResultList();
-        } catch (NoResultException exc) {
-            return Collections.emptyList();
-        }
-        return listOfDishes;
+        return dishService.getDishesByOrder(orderId);
     }
 
     @Override
     public List<Ingredient> getDishIngredients(String dishName) throws ApplicationException {
-        Dish dish;
         if (StringUtils.isBlank(dishName)) {
             throw new ApplicationException("Invalid dishId");
         }
-        try {
-            dish = entityManager.createQuery(
-                    "SELECT d FROM Dish d WHERE d.name = :dishName", Dish.class)
-                    .setParameter("dishName", dishName)
-                    .getSingleResult();
-        } catch (NoResultException exc) {
-            throw new ApplicationException("No dish found");
-        }
-        dish.getIngredients().size();
-        return dish.getIngredients();
+        return dishService.getDishIngredients(dishName);
     }
 
     @Override
     public List<Dish> getAllDishes() {
-        try {
-            return entityManager.createQuery(
-                    "SELECT d FROM Dish d", Dish.class)
-                    .getResultList();
-        } catch (NoResultException exc) {
-            return Collections.emptyList();
-        }
+        return dishService.getAllDishes();
     }
 
     @Override
@@ -100,36 +66,24 @@ public class DishManagerBean implements DishManagerBeanLocal {
             throw new ApplicationException("Incorrect data passed!");
         }
         try {
-            getDishByName(wsDish.getName());
-            throw new ApplicationException("There is already such meal!");
+            if(getDishByName(wsDish.getName())!=null){
+                throw new ApplicationException("There is already such meal!");
+            }
         } catch (ApplicationException ex) {
             if (!"Dish not found".equals(ex.getMessage()))
                 throw ex;
         }
-        Dish dish = new Dish();
-        dish.setType(wsDish.getType());
-        dish.setDishName(wsDish.getName());
-        dish.setCostInPennies((wsDish.getCost()).longValue());
-        List<Ingredient> ingredients = new ArrayList<>();
-        for (WSIngredient wsIngredient : wsDish.getIngredients()) {
-            ingredients.add(new Ingredient(wsIngredient.getIngredientName(), wsIngredient.getCalories()));
-        }
-        dish.setIngredients(ingredients);
-        for (Ingredient ingr : ingredients) {
-            entityManager.persist(ingr);
-        }
-        entityManager.persist(dish);
-        return dish;
+        return dishService.createDish(wsDish);
     }
 
     @Override
-    public Dish removeDish(Long dishId) throws ApplicationException {
+    public Dish removeDish(Long dishId) {
         //TODO
         return null;
     }
 
     @Override
-    public Dish modifyDish(WSDish wsDish) throws ApplicationException {
+    public Dish modifyDish(WSDish wsDish) {
         //TODO
         return null;
     }

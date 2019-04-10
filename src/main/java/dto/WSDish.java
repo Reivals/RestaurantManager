@@ -45,6 +45,19 @@ public class WSDish {
         return this;
     }
 
+    public Dish putProperties(){
+        Dish dish = new Dish();
+        dish.setType(this.type);
+        dish.setDishName(this.name);
+        dish.setCostInPennies((this.cost).longValue());
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (WSIngredient wsIngredient : this.ingredients) {
+            ingredients.add(new Ingredient(wsIngredient.getIngredientName(), wsIngredient.getCalories()));
+        }
+        dish.setIngredients(ingredients);
+        return dish;
+    }
+
     public boolean validateWSDish(){
         if(StringUtils.isBlank(name)){
             return false;

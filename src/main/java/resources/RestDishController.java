@@ -83,7 +83,12 @@ public class RestDishController {
     @POST
     @Path("/createNewOrder")
     public Response createNewOrder(WSSingleOrder singleOrder){
-        orderManagerBeanLocal.createOrder(singleOrder);
+        try {
+            orderManagerBeanLocal.createOrder(singleOrder);
+        } catch (ApplicationException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.ok().build();
     }
 
@@ -93,7 +98,12 @@ public class RestDishController {
                                    @PathParam("clientSurname") String clientSurname,
                                    @PathParam("tableNumber") Long tableNumber){
 
-        SingleOrder singleOrder = orderManagerBeanLocal.getClientSingleOrder(clientName, clientSurname, tableNumber);
+        SingleOrder singleOrder = null;
+        try {
+            singleOrder = orderManagerBeanLocal.getClientSingleOrder(clientName, clientSurname, tableNumber);
+        } catch (ApplicationException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         if(singleOrder != null){
             try {
                 return Response.ok(objectMapper.writeValueAsString(new WSSingleOrder().fillProperties(singleOrder))).build();

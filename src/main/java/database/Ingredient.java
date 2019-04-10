@@ -1,12 +1,10 @@
 package database;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,15 +28,7 @@ public class Ingredient {
     @Column(name = "ING_CALORIES")
     private Double calories;
 
-    @JsonIgnore
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "dish_ingredients",
-            joinColumns = @JoinColumn(name = "ING_IG"),
-            inverseJoinColumns = @JoinColumn(name = "DIS_ID")
-    )
+    @ManyToMany(mappedBy = "ingredients", fetch = FetchType.EAGER)
     private List<Dish> dishes;
 
 
