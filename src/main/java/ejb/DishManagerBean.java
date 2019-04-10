@@ -95,23 +95,29 @@ public class DishManagerBean implements DishManagerBeanLocal {
     }
 
     @Override
-    public Dish createDish(WSDish wsDish) throws ApplicationException{
-        if(!wsDish.validateWSDish()){
+    public Dish createDish(WSDish wsDish) throws ApplicationException {
+        if (!wsDish.validateWSDish()) {
             throw new ApplicationException("Incorrect data passed!");
         }
-        if(getDishByName(wsDish.getName())!=null){
+        try {
+            getDishByName(wsDish.getName());
             throw new ApplicationException("There is already such meal!");
+        } catch (ApplicationException ex) {
+            if (!"Dish not found".equals(ex.getMessage()))
+                throw ex;
         }
         Dish dish = new Dish();
         dish.setType(wsDish.getType());
         dish.setDishName(wsDish.getName());
         dish.setCostInPennies((wsDish.getCost()).longValue());
         List<Ingredient> ingredients = new ArrayList<>();
-        for(WSIngredient wsIngredient : wsDish.getIngredients()){
-            ingredients.add(new Ingredient(wsIngredient.getIngredientName(),wsIngredient.getCalories()));
+        for (WSIngredient wsIngredient : wsDish.getIngredients()) {
+            ingredients.add(new Ingredient(wsIngredient.getIngredientName(), wsIngredient.getCalories()));
         }
         dish.setIngredients(ingredients);
-
+        for (Ingredient ingr : ingredients) {
+            entityManager.persist(ingr);
+        }
         entityManager.persist(dish);
         return dish;
     }
