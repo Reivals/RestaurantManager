@@ -36,6 +36,7 @@ public class WSDish {
     private Long id;
 
     public WSDish fillProperties(Dish dish) {
+        this.id = dish.getId();
         this.name = dish.getDishName();
         this.cost = dish.getCostInZlotys();
         dish.getIngredients().stream().forEach(i -> {

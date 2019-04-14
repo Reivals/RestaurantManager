@@ -78,7 +78,15 @@ public class Dish {
     }
 
     public void removeIngredient(Ingredient ingredient){
-        this.ingredients.remove(ingredients);
+        this.ingredients.remove(ingredient);
         ingredient.getDishes().remove(this);
     }
+
+    public void removeAllIngredients() {
+        for(Ingredient ing : this.ingredients){
+            ing.getDishes().remove(this);
+        }
+        this.ingredients.clear();
+    }
+
 }

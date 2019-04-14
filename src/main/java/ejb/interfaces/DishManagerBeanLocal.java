@@ -20,6 +20,6 @@ public interface DishManagerBeanLocal {
     List<Ingredient> getDishIngredients(String dishName) throws ApplicationException;
     List<Dish> getAllDishes();
     Dish createDish(WSDish wsDish) throws ApplicationException;
-    Dish removeDish(Long dishId) throws ApplicationException;
+    void removeDish(Long dishId) throws ApplicationException;
     Dish modifyDish(WSDish wsDish) throws ApplicationException;
 }

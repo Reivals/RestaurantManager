@@ -73,9 +73,11 @@ public class SingleOrder {
         this.orderedDishes.clear();
     }
 
-
-
-
+    public void removeAllOccurrencesOf(Dish dish) {
+        while (this.orderedDishes.remove(dish)) {
+            dish.getSingleOrder().remove(this);
+        }
+    }
 
 
 }

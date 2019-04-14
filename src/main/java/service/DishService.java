@@ -2,7 +2,9 @@ package service;
 
 import database.Dish;
 import database.Ingredient;
+import database.SingleOrder;
 import dto.WSDish;
+import dto.WSIngredient;
 import exceptions.ApplicationException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -92,4 +94,47 @@ public class DishService {
         entityManager.persist(dish);
         return dish;
     }
+
+    public void removeDish(Long id) throws ApplicationException {
+        Dish dish;
+        List<SingleOrder> orders;
+        try {
+            dish = entityManager.createQuery("SELECT d FROM Dish d WHERE d.id = :dishId", Dish.class)
+                    .setParameter("dishId", id)
+                    .getSingleResult();
+            orders = entityManager.createQuery("SELECT o FROM SingleOrder o WHERE :dishId IN " +
+                    "(SELECT d.id FROM o.orderedDishes d)", SingleOrder.class)
+                    .setParameter("dishId", dish.getId())
+                    .getResultList();
+        } catch (NoResultException ex) {
+            ex.printStackTrace();
+            throw new ApplicationException("There is no dish with id " + id);
+        }
+        for(SingleOrder order : orders)
+            order.removeAllOccurrencesOf(dish);
+        entityManager.remove(dish);
+    }
+
+    public Dish modifyDish(WSDish wsDish) throws ApplicationException {
+        Dish dish;
+        try {
+            dish = entityManager.createQuery("SELECT d FROM Dish d WHERE d.id = :dishId", Dish.class)
+                    .setParameter("dishId", wsDish.getId())
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            ex.printStackTrace();
+            throw new ApplicationException("There is no dish with id " + wsDish.getId());
+        }
+        dish.setDishName(wsDish.getName());
+        dish.setCostInPennies((long) (wsDish.getCost() * 100));
+        dish.setType(wsDish.getType());
+        dish.removeAllIngredients();
+        //TODO: TO NA DOLE SIE WYPIER.......
+        /*for (WSIngredient ing : wsDish.getIngredients()) {
+            dish.addIngredient(new Ingredient(ing.getIngredientName(), ing.getCalories()));
+        }*/
+        entityManager.merge(dish);
+        return dish;
+    }
+
 }
