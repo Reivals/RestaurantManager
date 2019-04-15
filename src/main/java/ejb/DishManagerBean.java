@@ -75,7 +75,9 @@ public class DishManagerBean implements DishManagerBeanLocal {
             throw new ApplicationException("Incorrect data passed!");
         }
         try {
-            if (getDishByName(wsDish.getName()) != null) {
+            Dish dish = getDishByName(wsDish.getName());
+            if (getDishByName(wsDish.getName()) != null && wsDish.getIngredients().size() == dish.getIngredients().size() &&
+                    dish.getType() != wsDish.getType() && dish.getCostInZlotys() != wsDish.getCost()) {
                 throw new ApplicationException("There is already such a meal!");
             }
         } catch (ApplicationException ex) {

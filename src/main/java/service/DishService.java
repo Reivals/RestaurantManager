@@ -129,10 +129,9 @@ public class DishService {
         dish.setCostInPennies((long) (wsDish.getCost() * 100));
         dish.setType(wsDish.getType());
         dish.removeAllIngredients();
-        //TODO: TO NA DOLE SIE WYPIER.......
-        /*for (WSIngredient ing : wsDish.getIngredients()) {
+        for (WSIngredient ing : wsDish.getIngredients()) {
             dish.addIngredient(new Ingredient(ing.getIngredientName(), ing.getCalories()));
-        }*/
+        }
         entityManager.merge(dish);
         return dish;
     }
