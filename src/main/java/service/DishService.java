@@ -91,6 +91,8 @@ public class DishService {
 
     public Dish createDish(WSDish wsDish) {
         Dish dish = wsDish.putProperties();
+        dish.getIngredients().clear();
+        addIngredientsToDish(dish,wsDish);
         entityManager.persist(dish);
         return dish;
     }
@@ -129,11 +131,25 @@ public class DishService {
         dish.setCostInPennies((long) (wsDish.getCost() * 100));
         dish.setType(wsDish.getType());
         dish.removeAllIngredients();
-        for (WSIngredient ing : wsDish.getIngredients()) {
-            dish.addIngredient(new Ingredient(ing.getIngredientName(), ing.getCalories()));
-        }
+        addIngredientsToDish(dish,wsDish);
         entityManager.merge(dish);
         return dish;
+    }
+
+    private void addIngredientsToDish(Dish dish, WSDish wsDish){
+        Ingredient ingredient=null;
+        for(WSIngredient ing : wsDish.getIngredients()){
+            try{
+                ingredient = entityManager.createQuery("SELECT i FROM Ingredient i WHERE UPPER(i.name) = UPPER(:ingredientName)", Ingredient.class)
+                        .setParameter("ingredientName", ing.getIngredientName())
+                        .getSingleResult();
+            } catch(NoResultException exc){
+                dish.addIngredient(new Ingredient(ing.getIngredientName(),ing.getCalories()));
+            }
+            if(ingredient != null){
+                dish.addIngredient(ingredient);
+            }
+        }
     }
 
 }
