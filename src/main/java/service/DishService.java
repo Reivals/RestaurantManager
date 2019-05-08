@@ -32,10 +32,10 @@ public class DishService {
                     .setParameter("dishName", dishName)
                     .getSingleResult();
         } catch (NoResultException exc) {
-            throw new ApplicationException("Dish not found");
+            throw new NoResultException("Dish not found");
         } catch (NonUniqueResultException exc){
             exc.printStackTrace();
-            throw new ApplicationException("Database is inconsisten. There are multiple dishes with the same name : " + dishName);
+            throw new ApplicationException("Database is inconsistent. There are multiple dishes with the same name : " + dishName);
         }
         return dish;
 

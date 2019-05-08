@@ -5,14 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import database.Dish;
 import database.SingleOrder;
 import dto.WSDish;
+import dto.WSError;
 import dto.WSSingleOrder;
 import ejb.interfaces.DishManagerBeanLocal;
 import ejb.interfaces.OrderManagerBeanLocal;
 import exceptions.ApplicationException;
 import exceptions.ErrorMessage;
+import exceptions.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,11 +48,12 @@ public class RestDishController {
         try {
            Dish dish = dishManagerBean.getDishByName(WSDish.getName());
            return Response.ok(objectMapper.writeValueAsString(new WSDish().fillProperties(dish))).build();
-        } catch (ApplicationException e) {
-            return Response.status(204).build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return Response.status(500).build();
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ValidationException e){
+            return Response.status(Response.Status.BAD_REQUEST).entity(WSError.create(e.getMessage())).build();
+        } catch (JsonProcessingException | ApplicationException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -58,11 +63,11 @@ public class RestDishController {
         try {
             List<Dish> dish = dishManagerBean.getDishesByOrder(orderId);
             return Response.ok(objectMapper.writeValueAsString(dish)).build();
-        } catch (ApplicationException e) {
-            return Response.status(204).build();
+        } catch (ValidationException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(WSError.create(e.getMessage())).build();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return Response.status(500).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(WSError.create("Couldn't serialize object. Fatal error")).build();
         }
     }
 
@@ -71,12 +76,12 @@ public class RestDishController {
     public Response getAllDishes(){
         try {
             List<Dish> dish = dishManagerBean.getAllDishes();
-            List<WSDish> respone = new ArrayList<>();
-            dish.stream().forEach( d -> respone.add(new WSDish().fillProperties(d)));
-            return Response.ok(objectMapper.writeValueAsString(respone)).build();
+            List<WSDish> response = new ArrayList<>();
+            dish.stream().forEach( d -> response.add(new WSDish().fillProperties(d)));
+            return Response.ok(objectMapper.writeValueAsString(response)).build();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return Response.status(500).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(WSError.create("Couldn't serialize object. Fatal error")).build();
         }
     }
 
@@ -98,7 +103,7 @@ public class RestDishController {
                                    @PathParam("clientSurname") String clientSurname,
                                    @PathParam("tableNumber") Long tableNumber){
 
-        SingleOrder singleOrder = null;
+        SingleOrder singleOrder;
         try {
             singleOrder = orderManagerBeanLocal.getClientSingleOrder(clientName, clientSurname, tableNumber);
         } catch (ApplicationException e) {
@@ -121,9 +126,11 @@ public class RestDishController {
                                         @PathParam("dishId") Long dishId){
         try {
             orderManagerBeanLocal.removeDishFromOrder(singleOrderId, dishId);
-        } catch (ApplicationException e) {
+        } catch(NoResultException e){
+            return Response.status(Response.Status.NO_CONTENT).entity(WSError.create(e.getMessage())).build();
+        } catch(ApplicationException e) {
             e.printStackTrace();
-            return Response.serverError().build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(WSError.create(e.getMessage())).build();
         }
         return Response.ok().build();
     }
@@ -133,9 +140,11 @@ public class RestDishController {
     public Response modifySingleOrder(WSSingleOrder singleOrder){
         try {
             orderManagerBeanLocal.modifyClientSingleOrder(singleOrder);
+        } catch (NonUniqueResultException e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(WSError.create(e.getMessage())).build();
         } catch (ApplicationException e) {
             e.printStackTrace();
-            return Response.serverError().build();
+            return Response.status(Response.Status.NO_CONTENT).entity(WSError.create(e.getMessage())).build();
         }
         return Response.ok().build();
     }

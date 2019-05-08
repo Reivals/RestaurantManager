@@ -5,12 +5,14 @@ import database.Ingredient;
 import dto.WSDish;
 import ejb.interfaces.DishManagerBeanLocal;
 import exceptions.ApplicationException;
+import exceptions.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import service.DishService;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import java.util.List;
 
 /**
@@ -25,17 +27,17 @@ public class DishManagerBean implements DishManagerBeanLocal {
     private DishService dishService;
 
     @Override
-    public Dish getDishByName(String dishName) throws ApplicationException {
+    public Dish getDishByName(String dishName) throws ValidationException, ApplicationException {
         if (StringUtils.isBlank(dishName)) {
-            throw new ApplicationException("Invalid dishId");
+            throw new ValidationException("Invalid parameter: dishId");
         }
         return dishService.getDishByName(dishName);
     }
 
     @Override
-    public List<Dish> getDishesByOrder(Long orderId) throws ApplicationException {
+    public List<Dish> getDishesByOrder(Long orderId) throws ValidationException {
         if (orderId == null) {
-            throw new ApplicationException("Invalid orderId");
+            throw new ValidationException("Invalid parameter: orderId");
         }
         return dishService.getDishesByOrder(orderId);
     }
@@ -55,8 +57,12 @@ public class DishManagerBean implements DishManagerBeanLocal {
 
     @Override
     public Dish createDish(WSDish wsDish) throws ApplicationException {
-        validateDish(wsDish);
-        return dishService.createDish(wsDish);
+        try{
+            validateDish(wsDish);
+        } catch(NoResultException e){
+            return dishService.createDish(wsDish);
+        }
+        throw new ApplicationException("There is already meal with such name!");
     }
 
     @Override
@@ -76,13 +82,15 @@ public class DishManagerBean implements DishManagerBeanLocal {
         }
         try {
             Dish dish = getDishByName(wsDish.getName());
-            if (getDishByName(wsDish.getName()) != null && wsDish.getIngredients().size() == dish.getIngredients().size() &&
+            if (dish != null && wsDish.getIngredients().size() == dish.getIngredients().size() &&
                     dish.getType() != wsDish.getType() && dish.getCostInZlotys() != wsDish.getCost()) {
                 throw new ApplicationException("There is already such a meal!");
             }
         } catch (ApplicationException ex) {
-            if (!"Dish not found".equals(ex.getMessage()))
+            if (!"Invalid parameter: dishId".equals(ex.getMessage()))
                 throw ex;
+        } catch (ValidationException e) {
+            return;
         }
     }
 

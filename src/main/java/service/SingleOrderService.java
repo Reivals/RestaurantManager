@@ -80,7 +80,9 @@ public class SingleOrderService {
                     .getSingleResult();
         }catch(NonUniqueResultException exc) {
             exc.printStackTrace();
-            throw new ApplicationException("There is no such order with id: " + singleOrderId);
+            throw new ApplicationException("Multiple records found. Database inconsistency. Please contact administrator");
+        } catch (NoResultException e){
+            throw new NoResultException("There is no such order with id: " + singleOrderId);
         }
 
         for(Dish dish : singleOrder.getOrderedDishes()){
@@ -102,7 +104,7 @@ public class SingleOrderService {
             exc.printStackTrace();
             throw new ApplicationException("There is no such order with id: " + wsSingleOrder.getId());
         } catch(NonUniqueResultException exc ){
-            throw new ApplicationException("Multiple results found for the same id " + wsSingleOrder.getId() + ". Internal Error");
+            throw new NonUniqueResultException("Multiple records found. Database inconsistency. Please contact administrator");
         }
 
         singleOrder.removeAllDishesFromOrder();
